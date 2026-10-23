@@ -28,9 +28,15 @@ fi
 
 name="$hostname"
 volume="${hostname}-home"
+port=$(next_port 21501)
 
-podman create --systemd=always --name $name --hostname $hostname --volume $volume:/home/box --volume /tmp "$(cfg image)"
+
+podman create --systemd=always --name $name --hostname $hostname --volume $volume:/home/box --volume /tmp -p $port:22 "$(cfg image)"
 
 podman start $hostname 1>/dev/null
-exec podman cp "$pubkey" ${hostname}:/home/box/.ssh/authorized_keys
+
+podman cp "$pubkey" ${hostname}:/home/box/.ssh/authorized_keys
+podman exec -u root $hostname chmod 600 /home/box/.ssh/authorized_keys
+podman exec -u root $hostname chown box:box /home/box/.ssh/authorized_keys
+
 podman stop $hostname

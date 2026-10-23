@@ -10,3 +10,13 @@ cfg() {
 
     cat "$cfgfile"
 }
+
+next_port() {
+    local port
+    port="${1:?port is required}"
+    while ss -tulpn | grep -q ":${port} ";
+        do ((port++));
+    done;
+
+    echo $port
+}
