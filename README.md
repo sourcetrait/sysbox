@@ -4,6 +4,23 @@ SourceTrait SysBox
 
 An isolated Fedora system in a box (Podman container).
 
+Usage
+--------------------------------------------------------------------------------
+
+Shell scripts mentioned here are in:
+- Bash 5: `./shell/bash/*.bash`
+- PowerShell 7: `./shell/pwsh/*.ps1`
+
+Use the `once` script to setup shortcuts and build the container image:
+- Linux / Macos: `./shell/bash/once.bash`
+- Windows: `./shell/pwsh/once.ps1`
+
+
+Use the `create <hostname> <ssh_key>` script to create a new container.
+
+Use the `login <hostname>` to enter a container's terminal.
+
+
 Repository
 --------------------------------------------------------------------------------
 
@@ -12,6 +29,10 @@ Let us know! Upvote an existing issue or create one if not found.
 
 Have questions, concerns, ideas, or requests?  
 Upvote an existing discussion or create one if not found.
+
+### Branches
+- `release` (default) Stable
+- `dev` Unstable
 
 ### Contributors
 Contributors, please review [SOURCETRAIT.md](./SOURCETRAIT.md).  
