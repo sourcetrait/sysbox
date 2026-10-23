@@ -18,7 +18,7 @@ Use the `once` script to setup shortcuts and build the container image:
 
 Use the `create <hostname> <ssh_key>` script to create a new container.
 
-Use the `login <hostname>` to enter a container's terminal.
+Use the `login <hostname>` script to enter a container's terminal.
 
 
 Repository
