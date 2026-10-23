@@ -1,0 +1,8 @@
+.DS_Store
+/build.bash
+/build.ps1
+/create.bash
+/create.ps1
+/login.bash
+/login.ps1
+
