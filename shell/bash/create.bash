@@ -31,7 +31,7 @@ fi
 
 if [[ ! -f "$HOME/.ssh/config" ]]; then
     mkdir -p "$HOME/.ssh"
-    touch "$HOME/.ssh"
+    touch "$HOME/.ssh/config"
     chmod -R go-rwx "$HOME/.ssh"
 fi
 
