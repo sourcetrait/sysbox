@@ -8,22 +8,6 @@ dnf versionlock add nushell
 echo "[sysbox] disable optional services"
 systemctl disable --now nginx.service
 
-echo "[sysbox] copy filesystem"
-tar -C /mnt/dist/fs --owner=0 --group=0 --mode=u=rwX,go=rX -cf - . \
-| tar -C / --no-overwrite-dir -xf -
-
-echo "[sysbox] create skels"
-while IFS= read -r dir || [[ -n "$dir" ]]; do
-    [[ -n "$dir" ]] || continue
-    mkdir -p -- "/etc/sysbox/skel/uenv/$dir"
-done < /mnt/dist/list/dir/uenv.list
-
-while IFS= read -r dir || [[ -n "$dir" ]]; do
-    [[ -n "$dir" ]] || continue
-    mkdir -p -- "/etc/sysbox/skel/uenv-desk/$dir"
-done < /mnt/dist/list/dir/uenv/desk.list
-
-
 echo "[sysbox] permission for logins"
 chmod 640 /etc/shadow
 
