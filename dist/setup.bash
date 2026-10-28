@@ -2,12 +2,11 @@
 set -euo pipefail
 
 # copy system dist
-cp /mnt/dist/repo/*.repo /etc/yum.repos.d
-cp /mnt/dist/etc/ssh/sshd_config.d/*.conf /etc/ssh/sshd_config.d
+cp -a /mnt/dist/fhs /
 
 # install packages
-mapfile -t packages < /mnt/dist/packages.list
-mapfile -t coprs < /mnt/dist/coprs.list
+mapfile -t packages < /mnt/dist/list/package.list
+mapfile -t coprs < /mnt/dist/list/copr.list
 
 for copr in "${coprs[@]"; do
     dnf -y copr enable "$copr"
@@ -33,20 +32,16 @@ groupadd sshusr
 useradd -m -s /usr/bin/nu box
 usermod -aG sshusr box
 echo 'box:box' | chpasswd
-cp -a --update=none /etc/skel/. /home/box
 
-# scaffold home: box
-cd /home/box && mkdir -p .config .sys .ssh ai bak data proj repo doc down tmp mix tpl sort
-cd /home/box/.sys && mkdir -p of srv/git local adhoc mnt cache data
-cd /home/box/.sys/local && mkdir -p bin etc lib libexec man src doc opt
-cd /home/box/.sys/adhoc && mkdir -p bin etc lib libexec man src doc opt
+while IFS= read -r dir || [[ -n "$dir" ]]; do
+    [[ -n "$dir" ]] || continue
+    mkdir -p -- "/etc/skel/$dir"
+done < /mnt/dist/list/dir/uenv.list
 
-mkdir -p /home/box/.config/bash
-cp /mnt/dist/sysbox.bashrc /home/box/.config/bash/sysbox.bashrc
-echo 'source $HOME/.config/bash/sysbox.bashrc' >> /home/box/.bashrc
-
-touch /home/box/.ssh/config
-touch /home/box/.ssh/authorized_keys
+while IFS= read -r dir || [[ -n "$dir" ]]; do
+    [[ -n "$dir" ]] || continue
+    mkdir -p -- "/etc/skel/$dir"
+done < /mnt/dist/list/dir/uenv/desk.list
 
 chmod -R go-rwx /home/box
 chown -R box:box /home/box

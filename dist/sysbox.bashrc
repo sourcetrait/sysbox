@@ -1,6 +1,0 @@
-export XDG_CONFIG_HOME="$HOME/.config"
-export XDG_CACHE_HOME="$HOME/.sys/cache"
-export XDG_DATA_HOME="$HOME/.sys/data"
-export XDG_BIN_HOME="$HOME/.sys/local/bin"
-export CARGO_TARGET_DIR="$HOME/.sys/cache/cargo/target"
-export PATH="$PATH:$HOME/.sys/local/bin:$HOME/.sys/adhoc/bin"
