@@ -37,13 +37,12 @@ fi
 
 key_dir="$HOME/.ssh/key/pod/$HOSTNAME"
 box_key="$key_dir/id_box"
-box_pubkey="$key_dir/id_box"
-super_key="$key_dir/id_super.pub"
+box_pubkey="$key_dir/id_box.pub"
+super_key="$key_dir/id_super"
 super_pubkey="$key_dir/id_super.pub"
-mkdir -p "$key_dir"
 
 # don't overwrite keys
-if [[ -f "$box_key || -f "$super_key ]]; then
+if [[ -f "$box_key" || -f "$super_key" ]]; then
 	echo -e "[sysbox] error: ssh keys already exist: $key_dir"
 	exit 1
 fi
@@ -54,6 +53,7 @@ if ssh_config_exists "$hostname" || ssh_config_exists "super.$hostname"; then
 fi
 
 echo "[sysbox] creating ssh keys for users: box and super"
+mkdir -p "$key_dir"
 ssh-keygen -t ed25519 -C "box@${hostname}" -f "$box_key"
 ssh-keygen -t ed25519 -C "super@${hostname}" -f "$super_key"
 chmod -R go-rwx "$HOME/.ssh"
