@@ -19,7 +19,6 @@ nushell
 zsh
 fish
 powershell
-luajit
 helix
 nginx
 yazi
