@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
+echo "[sysbox] setup: begin"
 
-# copy system dist
+echo "[sysbox] copy filesystem"
 tar -C /mnt/dist/fs --owner=0 --group=0 --mode=u=rwX,go=rX -cf - . \
 | tar -C / --no-overwrite-dir -xf -
 
-# create skels
+echo "[sysbox] create skels"
 while IFS= read -r dir || [[ -n "$dir" ]]; do
     [[ -n "$dir" ]] || continue
     mkdir -p -- "/etc/sysbox/skel/uenv/$dir"
@@ -16,7 +17,7 @@ while IFS= read -r dir || [[ -n "$dir" ]]; do
     mkdir -p -- "/etc/sysbox/skel/uenv-desk/$dir"
 done < /mnt/dist/list/dir/uenv/desk.list
 
-# install packages
+echo "[sysbox] install packages"
 mapfile -t packages < /mnt/dist/list/package.list
 mapfile -t coprs < /mnt/dist/list/copr.list
 
@@ -28,38 +29,50 @@ dnf -y install "${packages[@]}"
 dnf -y upgrade
 dnf clean all
 
-# version locking
+echo "[sysbox] version-lock specific packages"
 dnf versionlock add nushell
 
-# disable optional services
+echo "[sysbox] disable optional services"
 systemctl disable --now nginx.service
 
-# required for ssh to work with logins
+echo "[sysbox] permission for logins"
 chmod 640 /etc/shadow
 
-# create groups
+echo "[sysbox] create groups"
 groupadd sshusr
 
-# create user: box
+echo "[sysbox] create user: box"
 useradd -m -s /usr/bin/nu box
 usermod -aG sshusr box
 echo 'box:box' | chpasswd
-# create user: super
+
+echo "[sysbox] create user: super"
 useradd -m -s /usr/bin/fish super
 usermod -aG sshusr,wheel super
 echo 'super:super' | chpasswd
 
-# setup home: box
+echo "[sysbox] setup home: box"
 cp -a /etc/sysbox/skel/uenv/. /home/box
 cp -a /etc/sysbox/skel/uenv-desk/. /home/box
 chmod -R go-rwx /home/box
 chown -R box:box /home/box
-# setup home: super
+
+echo "[sysbox] setup home: super"
 cp -a /etc/sysbox/skel/uenv/. /home/super
 cp -a /etc/sysbox/skel/uenv-desk/. /home/super
 chmod -R go-rwx /home/super
 chown -R super:super /home/super
 
-# cleanup
+echo "[sysbox] user install: begin: box"
+runuser -u box -- bash /mnt/dist/install/box.bash
+echo "[sysbox] user install: done: box"
+
+echo "[sysbox] final cleanup and re-permission"
 cd /root
+chmod -R go-rwx /home/box
+chown -R box:box /home/box
+chmod -R go-rwx /home/super
+chown -R super:super /home/super
 rm -rf /tmp/* /tmp/.*
+echo "[sysbox] setup: done"
+exit 0
