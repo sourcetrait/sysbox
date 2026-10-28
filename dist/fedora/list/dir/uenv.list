@@ -23,6 +23,7 @@
 .sys/local/opt
 .sys/local/src
 .sys/of
+.sys/secret
 .sys/state
 .sys/srv/git
 .sys/mnt
