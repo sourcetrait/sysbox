@@ -28,6 +28,6 @@ def __prompt_git_branch []: nothing -> string {
 }
 
 $env.HOSTNAME = (sys host | get hostname)
-$env.PROMPT_COMMAND       = {|| $"(ansi blue)($env.USER)(ansi grey)@($env.HOSTNAME) (ansi green)(__prompt_pwd)(ansi purple)(__prompt_git_branch)(ansi reset)" }
+$env.PROMPT_COMMAND       = {|| $"(ansi ($env | get -o COLOR_HOSTNAME | default blue))($env.USER)(ansi grey)@($env.HOSTNAME) (ansi green)(__prompt_pwd)(ansi purple)(__prompt_git_branch)(ansi reset)" }
 $env.PROMPT_INDICATOR     = {|| "> " }
 $env.PROMPT_COMMAND_RIGHT = {|| "" }

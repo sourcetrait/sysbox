@@ -50,6 +50,7 @@ fi
 # don't overwrite host configs
 if ssh_config_exists "$boxhost" || ssh_config_exists "super.$boxhost"; then
 	echo -e "[sysbox] error: ssh config hosts already exist: ~/.ssh/config"
+	exit 1
 fi
 
 echo "[sysbox] creating ssh keys for users: box and super"
