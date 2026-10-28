@@ -24,6 +24,12 @@ useradd -m -s /usr/bin/fish super
 usermod -aG sshusr,wheel super
 echo 'super:super' | chpasswd
 
+echo "[sysbox] setup home: root"
+cp -a /etc/sysbox/skel/uenv/. /root
+cp -a /etc/sysbox/skel/uenv-desk/. /root
+chmod -R go-rwx /root
+chown -R root:root /root
+
 echo "[sysbox] setup home: box"
 cp -a /etc/sysbox/skel/uenv/. /home/box
 cp -a /etc/sysbox/skel/uenv-desk/. /home/box

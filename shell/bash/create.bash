@@ -71,6 +71,9 @@ podman create --name $boxhost --hostname $boxhost \
  --volume /home/box/tmp \
  --volume /home/super/tmp \
  --volume /home/super/.sys/cache \
+ --volume /root \
+ --volume /root/tmp \
+ --volume /root/.sys/cache \
  "$(cfg image)"
 
 echo "[sysbox] starting container"

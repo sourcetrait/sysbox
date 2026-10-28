@@ -27,3 +27,4 @@
 .sys/state
 .sys/srv/git
 .sys/mnt
+tmp
