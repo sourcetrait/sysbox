@@ -29,6 +29,12 @@ if [[ -z "$hostname" ]]; then
     usage
 fi
 
+if [[ ! -f "$HOME/.ssh/config" ]]; then
+    mkdir -p "$HOME/.ssh"
+    touch "$HOME/.ssh"
+    chmod -R go-rwx "$HOME/.ssh"
+fi
+
 key_dir="$HOME/.ssh/key/pod/$HOSTNAME"
 box_key="$key_dir/id_box"
 box_pubkey="$key_dir/id_box"
