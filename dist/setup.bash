@@ -4,6 +4,17 @@ set -euo pipefail
 # copy system dist
 cp -a /mnt/dist/fhs/. /
 
+# create skels
+while IFS= read -r dir || [[ -n "$dir" ]]; do
+    [[ -n "$dir" ]] || continue
+    mkdir -p -- "/etc/sysbox/skel/uenv/$dir"
+done < /mnt/dist/list/dir/uenv.list
+
+while IFS= read -r dir || [[ -n "$dir" ]]; do
+    [[ -n "$dir" ]] || continue
+    mkdir -p -- "/etc/sysbox/skel/uenv-desk/$dir"
+done < /mnt/dist/list/dir/uenv/desk.list
+
 # install packages
 mapfile -t packages < /mnt/dist/list/package.list
 mapfile -t coprs < /mnt/dist/list/copr.list
@@ -32,22 +43,21 @@ groupadd sshusr
 useradd -m -s /usr/bin/nu box
 usermod -aG sshusr box
 echo 'box:box' | chpasswd
+# create user: super
+useradd -m -s /usr/bin/fish super
+usermod -aG sshusr,wheel super
+echo 'super:super' | chpasswd
 
-while IFS= read -r dir || [[ -n "$dir" ]]; do
-    [[ -n "$dir" ]] || continue
-    mkdir -p -- "/etc/sysbox/skel/uenv/$dir"
-done < /mnt/dist/list/dir/uenv.list
-
-while IFS= read -r dir || [[ -n "$dir" ]]; do
-    [[ -n "$dir" ]] || continue
-    mkdir -p -- "/etc/sysbox/skel/uenv-desk/$dir"
-done < /mnt/dist/list/dir/uenv/desk.list
-
+# setup home: box
 cp -a /etc/sysbox/skel/uenv/. /home/box
 cp -a /etc/sysbox/skel/uenv-disk/. /home/box
-
 chmod -R go-rwx /home/box
 chown -R box:box /home/box
+# setup home: super
+cp -a /etc/sysbox/skel/uenv/. /home/super
+cp -a /etc/sysbox/skel/uenv-disk/. /home/super
+chmod -R go-rwx /home/super
+chown -R super:super /home/super
 
 # cleanup
 cd /root
