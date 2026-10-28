@@ -50,12 +50,12 @@ echo 'super:super' | chpasswd
 
 # setup home: box
 cp -a /etc/sysbox/skel/uenv/. /home/box
-cp -a /etc/sysbox/skel/uenv-disk/. /home/box
+cp -a /etc/sysbox/skel/uenv-desk/. /home/box
 chmod -R go-rwx /home/box
 chown -R box:box /home/box
 # setup home: super
 cp -a /etc/sysbox/skel/uenv/. /home/super
-cp -a /etc/sysbox/skel/uenv-disk/. /home/super
+cp -a /etc/sysbox/skel/uenv-desk/. /home/super
 chmod -R go-rwx /home/super
 chown -R super:super /home/super
 
