@@ -98,4 +98,9 @@ Host super.$hostname
 	IdentityFile ~/.ssh/key/pod/$HOSTNAME/id_super
 EOF
 
+echo "[sysbox] instructions:"
+echo "[sysbox] start: `podman start $hostname`"
+echo "[sysbox] stop:  `podman stop $hostname`"
+echo "[sysbox] ssh:   `ssh $hostname`"
+echo "[sysbox] admin: `ssh super.$hostname`"
 echo "[sysbox] done"
