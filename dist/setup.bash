@@ -2,7 +2,8 @@
 set -euo pipefail
 
 # copy system dist
-cp -a /mnt/dist/fhs/. /
+tar -C /mnt/dist/fs --owner=0 --group=0 --mode=u=rwX,go=rX -cf - . \
+| tar -C / --no-overwrite-dir -xf -
 
 # create skels
 while IFS= read -r dir || [[ -n "$dir" ]]; do
