@@ -84,18 +84,18 @@ echo "[sysbox] configuring ssh hosts for container: $hostname and super.$hostnam
 cat >$HOME/.ssh/config <<EOF
 
 Host $hostname
-	Hostname localhost
-	Port $port
-	User box
-	PreferredAuthentications publickey
-	IdentityFile ~/.ssh/key/pod/$HOSTNAME/id_box
+  Hostname localhost
+  Port $port
+  User box
+  PreferredAuthentications publickey
+  IdentityFile ~/.ssh/key/pod/$HOSTNAME/id_box
 
 Host super.$hostname
-	Hostname localhost
-	Port $port
-	User super
-	PreferredAuthentications publickey
-	IdentityFile ~/.ssh/key/pod/$HOSTNAME/id_super
+  Hostname localhost
+  Port $port
+  User super
+  PreferredAuthentications publickey
+  IdentityFile ~/.ssh/key/pod/$HOSTNAME/id_super
 EOF
 
 echo "[sysbox] instructions:"
