@@ -105,6 +105,9 @@ Host super.$boxhost
   IdentityFile ~/.ssh/key/pod/$boxhost/id_super
 EOF
 
+echo "[sysbox] refreshing known hosts"
+ssh-keygen -f "$HOME/.ssh/known_hosts" -R "[localhost]:$ssh_port"
+
 echo "[sysbox] instructions:"
 echo "[sysbox] start:  podman start $boxhost"
 echo "[sysbox] stop:   podman stop $boxhost"
