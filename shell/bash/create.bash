@@ -81,7 +81,7 @@ echo "[sysbox] stopping container"
 podman stop $hostname
 
 echo "[sysbox] configuring ssh hosts for container: $hostname and super.$hostname"
-cat >$HOME<<EOF
+cat >$HOME/.ssh/config <<EOF
 
 Host $hostname
 	Hostname localhost
