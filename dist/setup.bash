@@ -2,13 +2,13 @@
 set -euo pipefail
 
 # copy system dist
-cp -a /mnt/dist/fhs /
+cp -a /mnt/dist/fhs/. /
 
 # install packages
 mapfile -t packages < /mnt/dist/list/package.list
 mapfile -t coprs < /mnt/dist/list/copr.list
 
-for copr in "${coprs[@]"; do
+for copr in "${coprs[@]}"; do
     dnf -y copr enable "$copr"
 done
 
@@ -35,12 +35,12 @@ echo 'box:box' | chpasswd
 
 while IFS= read -r dir || [[ -n "$dir" ]]; do
     [[ -n "$dir" ]] || continue
-    mkdir -p -- "/etc/skel/$dir"
+    mkdir -p -- "/etc/sysbox/skel/uenv/$dir"
 done < /mnt/dist/list/dir/uenv.list
 
 while IFS= read -r dir || [[ -n "$dir" ]]; do
     [[ -n "$dir" ]] || continue
-    mkdir -p -- "/etc/skel/$dir"
+    mkdir -p -- "/etc/sysbox/skel/uenv-desk/$dir"
 done < /mnt/dist/list/dir/uenv/desk.list
 
 chmod -R go-rwx /home/box
