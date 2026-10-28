@@ -58,24 +58,22 @@ ssh-keygen -t ed25519 -C "box@${hostname}" -f "$box_key"
 ssh-keygen -t ed25519 -C "super@${hostname}" -f "$super_key"
 chmod -R go-rwx "$HOME/.ssh"
 
-name="$boxhost"
 volume="${hostname}-home"
-port=$(next_port 21501)
+ssh_port=$(next_port 21501)
 
 echo "[sysbox] creating container"
-podman create --systemd=always --name $name --hostname $boxhost --volume $volume:/home --volume /mnt/cache -p $port:22 "$(cfg image)"
+podman create --name $boxhost --hostname $boxhost \
+ --systemd=always \
+ -p $ssh_port:22 \
+ --volume $volume:/home \
+ --volume /home/box/.sys/cache \
+ --volume /home/box/tmp \
+ --volume /home/super/tmp \
+ --volume /home/super/.sys/cache \
+ "$(cfg image)"
 
 echo "[sysbox] starting container"
 podman start $boxhost 1>/dev/null
-
-echo "[sysbox] mounting cache"
-podman exec -u root $boxhost mkdir -p /mnt/cache/{1000,1001}
-podman exec -u root $boxhost mv /home/box/.sys/cache /mnt/cache/1000 && mnt /home/box/tmp /mnt/cache/1000
-podman exec -u root $boxhost mv /home/super/.sys/cache /mnt/cache/1001 && mnt /home/super/tmp /mnt/cache/1001
-podman exec -u root $boxhost chown 1000:1000 /mnt/cache/1000 /mnt/cache/1000/{cache,tmp} && chmod go-rwx /mnt/cache/1000 /mnt/cache/1000/{cache,tmp}
-podman exec -u root $boxhost chown 1000:1000 /mnt/cache/1001 /mnt/cache/1001/{cache,tmp} && chmod go-rwx /mnt/cache/1001 /mnt/cache/1001/{cache,tmp}
-podman exec -u root $boxhost ln /mnt/cache/1000/cache /home/box/.sys/cache && ln /mnt/cache/1000/tmp /home/box/tmp
-podman exec -u root $boxhost ln /mnt/cache/1001/cache /home/super/.sys/cache && ln /mnt/cache/1001/tmp /home/super/tmp
 
 echo "[sysbox] copying ssh keys"
 podman cp "$box_pubkey" ${hostname}:/home/box/.ssh/authorized_keys
@@ -86,26 +84,20 @@ podman cp "$super_pubkey" ${hostname}:/home/super/.ssh/authorized_keys
 podman exec -u root $boxhost chmod 600 /home/super/.ssh/authorized_keys
 podman exec -u root $boxhost chown super:super /home/super/.ssh/authorized_keys
 
-echo "[sysbox] re-permission"
-podman exec -u root $boxhost chown -R box:box /home/box && chmod -R go-rwx /home/box
-podman exec -u root $boxhost chown -R super:super /mnt/cache/1001 && chmod -R go-rwx /home/super
-
 echo "[sysbox] stopping container"
 podman stop $boxhost
 
 echo "[sysbox] configuring ssh hosts for container: $boxhost and super.$boxhost"
 cat >$HOME/.ssh/config <<EOF
-
 Host $boxhost
   Hostname localhost
-  Port $port
+  Port $ssh_port
   User box
   PreferredAuthentications publickey
-  IdentityFile ~/.ssh/key/pod/$box/id_box
-
+  IdentityFile ~/.ssh/key/pod/$boxhost/id_box
 Host super.$boxhost
   Hostname localhost
-  Port $port
+  Port $ssh_port
   User super
   PreferredAuthentications publickey
   IdentityFile ~/.ssh/key/pod/$boxhost/id_super
