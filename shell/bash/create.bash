@@ -4,7 +4,7 @@ REPO_DIR="$(realpath "$(dirname "$(readlink "${BASH_SOURCE[0]}")")/../..")"
 source "$REPO_DIR/shell/bash/lib.bash"
 cd $REPO_DIR
 
-hostname="${1:-}"
+boxhost="${1:-}"
 
 usage() {
     echo -e "creates a sysbox podman container"
@@ -54,11 +54,11 @@ fi
 
 echo "[sysbox] creating ssh keys for users: box and super"
 mkdir -p "$key_dir"
-ssh-keygen -t ed25519 -C "box@${hostname}" -f "$box_key"
-ssh-keygen -t ed25519 -C "super@${hostname}" -f "$super_key"
+ssh-keygen -t ed25519 -C "box@${boxhost}" -f "$box_key"
+ssh-keygen -t ed25519 -C "super@${boxhost}" -f "$super_key"
 chmod -R go-rwx "$HOME/.ssh"
 
-volume="${hostname}-home"
+volume="${boxhost}-home"
 ssh_port=$(next_port 21501)
 
 echo "[sysbox] creating container"
@@ -76,11 +76,11 @@ echo "[sysbox] starting container"
 podman start $boxhost 1>/dev/null
 
 echo "[sysbox] copying ssh keys"
-podman cp "$box_pubkey" ${hostname}:/home/box/.ssh/authorized_keys
+podman cp "$box_pubkey" ${boxhost}:/home/box/.ssh/authorized_keys
 podman exec -u root $boxhost chmod 600 /home/box/.ssh/authorized_keys
 podman exec -u root $boxhost chown box:box /home/box/.ssh/authorized_keys
 
-podman cp "$super_pubkey" ${hostname}:/home/super/.ssh/authorized_keys
+podman cp "$super_pubkey" ${boxhost}:/home/super/.ssh/authorized_keys
 podman exec -u root $boxhost chmod 600 /home/super/.ssh/authorized_keys
 podman exec -u root $boxhost chown super:super /home/super/.ssh/authorized_keys
 
@@ -88,7 +88,8 @@ echo "[sysbox] stopping container"
 podman stop $boxhost
 
 echo "[sysbox] configuring ssh hosts for container: $boxhost and super.$boxhost"
-cat >$HOME/.ssh/config <<EOF
+cat >>$HOME/.ssh/config <<EOF
+
 Host $boxhost
   Hostname localhost
   Port $ssh_port
@@ -104,8 +105,8 @@ Host super.$boxhost
 EOF
 
 echo "[sysbox] instructions:"
-echo "[sysbox] start: `podman start $boxhost`"
-echo "[sysbox] stop:  `podman stop $boxhost`"
-echo "[sysbox] ssh:   `ssh $boxhost`"
-echo "[sysbox] admin: `ssh super.$boxhost`"
+echo "[sysbox] start:  podman start $boxhost"
+echo "[sysbox] stop:   podman stop $boxhost"
+echo "[sysbox] ssh:    ssh $boxhost"
+echo "[sysbox] admin:  ssh super.$boxhost"
 echo "[sysbox] done"

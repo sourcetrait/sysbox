@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
-echo "[sysbox] setup: begin"
+echo "[sysbox] install: root: begin"
+
+echo "[sysbox] version-lock specific packages"
+dnf versionlock add nushell
+
+echo "[sysbox] disable optional services"
+systemctl disable --now nginx.service
 
 echo "[sysbox] copy filesystem"
 tar -C /mnt/dist/fs --owner=0 --group=0 --mode=u=rwX,go=rX -cf - . \
@@ -17,23 +23,6 @@ while IFS= read -r dir || [[ -n "$dir" ]]; do
     mkdir -p -- "/etc/sysbox/skel/uenv-desk/$dir"
 done < /mnt/dist/list/dir/uenv/desk.list
 
-echo "[sysbox] install packages"
-mapfile -t packages < /mnt/dist/list/package.list
-mapfile -t coprs < /mnt/dist/list/copr.list
-
-for copr in "${coprs[@]}"; do
-    dnf -y copr enable "$copr"
-done
-
-dnf -y install "${packages[@]}"
-dnf -y upgrade
-dnf clean all
-
-echo "[sysbox] version-lock specific packages"
-dnf versionlock add nushell
-
-echo "[sysbox] disable optional services"
-systemctl disable --now nginx.service
 
 echo "[sysbox] permission for logins"
 chmod 640 /etc/shadow
@@ -63,10 +52,6 @@ cp -a /etc/sysbox/skel/uenv-desk/. /home/super
 chmod -R go-rwx /home/super
 chown -R super:super /home/super
 
-echo "[sysbox] user install: begin: box"
-runuser -u box -- bash /mnt/dist/install/box.bash
-echo "[sysbox] user install: done: box"
-
 echo "[sysbox] final cleanup and re-permission"
 cd /root
 chmod -R go-rwx /home/box
@@ -74,5 +59,5 @@ chown -R box:box /home/box
 chmod -R go-rwx /home/super
 chown -R super:super /home/super
 rm -rf /tmp/* /tmp/.*
-echo "[sysbox] setup: done"
+echo "[sysbox] install: root: done"
 exit 0

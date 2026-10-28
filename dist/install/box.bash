@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+echo "[sysbox] user install: begin: box"
 
 export UENV_USR_OF="$HOME/.sys/of"
 export RUSTUP_HOME="$UENV_USR_OF/rustup"
@@ -25,3 +26,6 @@ done
 
 echo "[sysbox] rust cleanup"
 cargo cache --autoclean
+
+echo "[sysbox] user install: done: box"
+exit 0
