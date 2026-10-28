@@ -43,6 +43,9 @@ while IFS= read -r dir || [[ -n "$dir" ]]; do
     mkdir -p -- "/etc/sysbox/skel/uenv-desk/$dir"
 done < /mnt/dist/list/dir/uenv/desk.list
 
+cp -a /etc/sysbox/skel/uenv/. /home/box
+cp -a /etc/sysbox/skel/uenv-disk/. /home/box
+
 chmod -R go-rwx /home/box
 chown -R box:box /home/box
 
