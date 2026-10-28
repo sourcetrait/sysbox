@@ -1,1 +1,1 @@
-source /opt/sysbox/nushell/config/sysbox.config.nu
+source /opt/sysbox/shell/nu/config/sysbox.config.nu

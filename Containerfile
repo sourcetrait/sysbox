@@ -5,7 +5,7 @@ RUN --mount=type=bind,source=dist/fedora,target=/mnt/dist,Z bash /mnt/dist/insta
 RUN --mount=type=bind,source=dist/fedora,target=/mnt/dist,Z bash /mnt/dist/install/root.bash
 USER box
 WORKDIR /home/box
-RUN --mount=type=bind,source=dist/fedora,target=/mnt/dist/fedora,Z bash /mnt/dist/install/box.bash
+RUN --mount=type=bind,source=dist/fedora,target=/mnt/dist,Z bash /mnt/dist/install/box.bash
 USER root
 WORKDIR /root
 CMD ["/sbin/init"]
