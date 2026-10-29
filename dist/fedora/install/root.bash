@@ -47,18 +47,18 @@ systemctl disable --now nginx.service
 echo "[sysbox] permission for logins"
 chmod 640 /etc/shadow
 
-echo "[sysbox] create groups"
-groupadd sshusr
-
 echo "[sysbox] create user: box"
 useradd -M -d /home/box -s /usr/bin/nu box
-usermod -aG sshusr box
 echo 'box:box' | chpasswd
 
 echo "[sysbox] create user: super"
 useradd -M -d /home/super -s /usr/bin/fish super
-usermod -aG sshusr,wheel super
 echo 'super:super' | chpasswd
+
+echo "[sysbox] create groups and apply to users"
+groupadd sshusr
+usermod -aG sshusr box
+usermod -aG sshusr,wheel super
 
 echo "[sysbox] final cleanup and re-permission"
 cd /root
