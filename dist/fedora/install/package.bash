@@ -31,6 +31,9 @@ dnf -y install "${packages[@]}"
 echo "[sysbox] update"
 dnf -y upgrade
 
+echo "[sysbox] restore package capabilities"
+rpm --restore shadow-utils
+
 echo "[sysbox] clean"
 dnf clean all
 
