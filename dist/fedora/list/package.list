@@ -10,6 +10,7 @@ clang
 cmake
 openssl-devel
 qemu
+podman
 jq
 fd-find
 ripgrep
