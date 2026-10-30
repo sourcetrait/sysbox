@@ -59,21 +59,22 @@ ssh-keygen -t ed25519 -C "box@${boxhost}" -f "$box_key"
 ssh-keygen -t ed25519 -C "super@${boxhost}" -f "$super_key"
 chmod -R go-rwx "$HOME/.ssh"
 
-volume="${boxhost}-home"
+home_volume="${boxhost}-home"
+box_cache_volume="${boxhost}-box-cache"
+box_tmp_volume="${boxhost}-box-tmp"
+super_cache_volume="${boxhost}-super-cache"
+super_tmp_volume="${boxhost}-super-tmp"
 ssh_port=$(next_port 21501)
 
 echo "[sysbox] creating container"
 podman create --name $boxhost --hostname $boxhost \
  --systemd=always \
  -p $ssh_port:22 \
- --volume $volume:/home \
- --volume /home/box/.sys/cache \
- --volume /home/box/tmp \
- --volume /home/super/tmp \
- --volume /home/super/.sys/cache \
- --volume /root \
- --volume /root/tmp \
- --volume /root/.sys/cache \
+ --volume $home_volume:/home \
+ --volume $box_cache_volume:/home/box/.sys/cache \
+ --volume $box_tmp_volume:/home/box/tmp \
+ --volume $super_cache_volume:/home/super/.sys/cache \
+ --volume $super_tmp_volume:/home/super/tmp \
  "$(cfg image)"
 
 echo "[sysbox] starting container"
