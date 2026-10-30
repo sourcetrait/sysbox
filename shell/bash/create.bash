@@ -89,6 +89,9 @@ podman cp "$super_pubkey" ${boxhost}:/home/super/.ssh/authorized_keys
 podman exec -u root $boxhost chmod 600 /home/super/.ssh/authorized_keys
 podman exec -u root $boxhost chown super:super /home/super/.ssh/authorized_keys
 
+echo "[sysbox] setting acls: /home/op"
+podman exec -u root $boxhost setfacl -d -m u::rwx,g::rwx,o::---,m::rwx /home/op
+
 echo "[sysbox] stopping container"
 podman stop $boxhost
 
