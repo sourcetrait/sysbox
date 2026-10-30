@@ -23,6 +23,10 @@ cp -a /etc/sysbox/skel/uenv-desk/. /home/super
 chmod -R go-rwx /home/super
 chown -R super:super /home/super
 
+echo "[sysbox] setup group home: op"
+install -d -o root -g op -m 2770 /home/op
+setfacl -d -m u::rwx,g::rwx,o::---,m::rwx /home/op
+
 echo "[sysbox] cleanup and re-permission"
 cd /root
 rm -rf /tmp/* /tmp/.*
