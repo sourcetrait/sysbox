@@ -1,0 +1,9 @@
+[packagecloud-github-git-lfs]
+name=packagecloud-github-git-lfs
+baseurl=https://packagecloud.io/github/git-lfs/fedora/44/$basearch
+repo_gpgcheck=1
+gpgcheck=0
+enabled=1
+gpgkey=https://packagecloud.io/github/git-lfs/gpgkey
+sslverify=1
+metadata_expire=300

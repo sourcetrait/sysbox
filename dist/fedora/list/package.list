@@ -6,6 +6,7 @@ python3-pip
 uv
 openssh-server
 @c-development
+golang
 clang
 cmake
 openssl-devel
