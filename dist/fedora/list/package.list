@@ -7,6 +7,7 @@ uv
 openssh-server
 @c-development
 golang
+delve
 clang
 cmake
 openssl-devel
