@@ -35,23 +35,31 @@ if [[ ! -f "$HOME/.ssh/config" ]]; then
     chmod -R go-rwx "$HOME/.ssh"
 fi
 
-key_dir="$HOME/.ssh/key/pod/$boxhost"
+pod_dir="$HOME/.ssh/local/pod/$boxhost"
+key_dir="$pod_dir/key"
+config_file="$pod_dir/$boxhost.config"
 box_key="$key_dir/id_box"
 box_pubkey="$key_dir/id_box.pub"
 super_key="$key_dir/id_super"
 super_pubkey="$key_dir/id_super.pub"
 
+# don't overwrite config file
+if [[ -f "$config_file" ]]; then
+	echo -e "[sysbox] error: ssh config already exists: $config_file"
+	exit 1
+fi
 # don't overwrite keys
 if [[ -f "$box_key" || -f "$super_key" ]]; then
 	echo -e "[sysbox] error: ssh keys already exist: $key_dir"
 	exit 1
 fi
-
 # don't overwrite host configs
 if ssh_config_exists "$boxhost" || ssh_config_exists "super.$boxhost"; then
 	echo -e "[sysbox] error: ssh config hosts already exist: ~/.ssh/config"
 	exit 1
 fi
+
+mkdir -p "$key_dir"
 
 echo "[sysbox] creating ssh keys for users: box and super"
 mkdir -p "$key_dir"
@@ -96,8 +104,7 @@ echo "[sysbox] stopping container"
 podman stop $boxhost
 
 echo "[sysbox] configuring ssh hosts for container: $boxhost and super.$boxhost"
-cat >>$HOME/.ssh/config <<EOF
-
+cat > "$config_file" <<EOF
 Host $boxhost
   Hostname localhost
   Port $ssh_port
@@ -111,6 +118,10 @@ Host super.$boxhost
   PreferredAuthentications publickey
   IdentityFile ~/.ssh/key/pod/$boxhost/id_super
 EOF
+cat >> "$HOME/.ssh/config" <<EOF
+
+Include $config_file
+EOF
 
 echo "[sysbox] refreshing known hosts"
 ssh-keygen -f "$HOME/.ssh/known_hosts" -R "[localhost]:$ssh_port"
@@ -121,3 +132,4 @@ echo "[sysbox] stop:   podman stop $boxhost"
 echo "[sysbox] ssh:    ssh $boxhost"
 echo "[sysbox] admin:  ssh super.$boxhost"
 echo "[sysbox] done"
+
