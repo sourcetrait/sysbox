@@ -38,10 +38,10 @@ fi
 pod_dir="$HOME/.ssh/local/pod/$boxhost"
 key_dir="$pod_dir/key"
 config_file="$pod_dir/$boxhost.config"
-box_key="$key_dir/id_box"
-box_pubkey="$key_dir/id_box.pub"
-super_key="$key_dir/id_super"
-super_pubkey="$key_dir/id_super.pub"
+box_key="$key_dir/id_box_$boxhost"
+box_pubkey="$box_key.pub"
+super_key="$key_dir/id_super_$boxhost"
+super_pubkey="$super_key.pub"
 
 # don't overwrite config file
 if [[ -f "$config_file" ]]; then
@@ -97,13 +97,14 @@ podman cp "$super_pubkey" ${boxhost}:/home/super/.ssh/authorized_keys
 podman exec -u root $boxhost chmod 600 /home/super/.ssh/authorized_keys
 podman exec -u root $boxhost chown super:super /home/super/.ssh/authorized_keys
 
-echo "[sysbox] setting acls: /home/op"
-podman exec -u root $boxhost setfacl -d -m u::rwx,g::rwx,o::---,m::rwx /home/op
+echo "[sysbox] setting acls: /home/group/super-box"
+podman exec -u root $boxhost setfacl -d -m u::rwx,g::rwx,o::---,m::rwx /home/group/super-box
 
 echo "[sysbox] stopping container"
 podman stop $boxhost
 
 echo "[sysbox] configuring ssh hosts for container: $boxhost and super.$boxhost"
+
 cat > "$config_file" <<EOF
 Host $boxhost
   Hostname localhost
@@ -118,10 +119,23 @@ Host super.$boxhost
   PreferredAuthentications publickey
   IdentityFile ~/.ssh/key/pod/$boxhost/id_super
 EOF
-cat >> "$HOME/.ssh/config" <<EOF
 
-Include $config_file
-EOF
+include_ssh_config() {
+    local config_file padding='' last_line
+    config_file=${1:?config_file is required}
+
+    IFS= read -r last_line < <(tail -n 1 -- "$HOME/.ssh/config") || padding=$'\n'
+
+    if [[ -z "$last_line" ]]; then
+        padding=''
+    elif [[ ! ${last_line,,} =~ ^[[:blank:]]*include([[:blank:]=]|$) ]]; then
+        padding+=$'\n'
+    fi
+
+    printf '%sInclude "%s"\n' "$padding" "$config_file" >> "$HOME/.ssh/config"
+}
+
+include_ssh_config "$config_file"
 
 echo "[sysbox] refreshing known hosts"
 ssh-keygen -f "$HOME/.ssh/known_hosts" -R "[localhost]:$ssh_port"

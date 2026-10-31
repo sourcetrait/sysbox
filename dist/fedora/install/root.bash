@@ -57,10 +57,10 @@ echo 'super:super' | chpasswd
 
 echo "[sysbox] create group: sshusr ; ssh logins restricted to this group"
 groupadd sshusr
-echo "[sysbox] create group: op ; shared files between box/super: /home/op"
-groupadd op
-usermod -aG op,sshusr box
-usermod -aG op,sshusr,wheel super
+echo "[sysbox] create group: super-box ; shared files between super/box at /home/group/super-box"
+groupadd super-box
+usermod -aG super-box,sshusr box
+usermod -aG super-box,sshusr,wheel super
 
 echo "[sysbox] final cleanup and re-permission"
 cd /root
